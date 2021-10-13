@@ -82,7 +82,7 @@ amount_object = 0
 object_number = 0
 target_amount_object = 5
 counter_for_new_object = 1000
-time_number = 35
+time_number = 36
 change_color_count = 0
 megalovania_check = True
 
@@ -244,7 +244,7 @@ while not finished:
     title(screen, (120, 300), (180, 560),  (100, 450), 80, RED)
     pygame.display.update()
 finished = False
-pygame.mixer.music.set_volume(0.05)
+pygame.mixer.music.set_volume(1)
 pygame.mixer.music.play()
 while not finished:
     clock.tick(FPS)
@@ -284,7 +284,7 @@ while not finished:
     counter_for_new_ball += 4
     counter_for_new_object += 4
 finished = False
-pygame.mixer.music.pause()
+#pygame.mixer.music.pause()
 sans_surf = pygame.image.load('mn.png')
 screen.fill((255, 255, 255))
 screen.blit(sans_surf, (500, 0))
@@ -293,8 +293,11 @@ f = open('score.txt', 'r+')
 f.read()
 f.write('\n' + name + ' ' + str(score_number))
 f.close()
+volume = 1
 while not finished:
     clock.tick(FPS)
+    volume *= 0.99
+    pygame.mixer.music.set_volume(volume)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True

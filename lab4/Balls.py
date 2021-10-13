@@ -9,7 +9,6 @@ pygame.init()
 
 pygame.mixer.music.load('m.ogg')
 
-
 FPS = 144
 x_screen_size = 1200
 y_screen_size = 700
@@ -93,17 +92,20 @@ def score(screen, font_coord, font_size, font_color):
     score_result = score_font.render(str(score_number), True, font_color)
     screen.blit(score_result, font_coord)
 
+
 def time(screen, font_coord, font_size, font_color):
     global time_number
     time_font = pygame.font.Font(None, font_size)
     time_result = time_font.render(str(time_number), True, font_color)
     screen.blit(time_result, font_coord)
 
+
 def end(screen, font_coord, font_size, font_color):
     global score_number
     time_font = pygame.font.Font(None, font_size)
     time_result = time_font.render('Очки:' + str(score_number), True, font_color)
     screen.blit(time_result, font_coord)
+
 
 def title(screen, font_coord, font_coord2, font_coord3, font_size, font_color):
     title_font = pygame.font.Font(None, font_size)
@@ -122,8 +124,8 @@ def click(event):
     while i < len(x_ball) and clicked == True:
         delta_x = x_ball[i] - event.pos[0]
         delta_y = y_ball[i] - event.pos[1]
-        if delta_x**2 + delta_y**2 <= r_ball[i]**2:
-            #print('Nice!')
+        if delta_x ** 2 + delta_y ** 2 <= r_ball[i] ** 2:
+            # print('Nice!')
             score_number += 1
             ball_number -= 1
             amount_balls -= 1
@@ -134,8 +136,8 @@ def click(event):
             dy_ball.pop(i)
             color_ball.pop(i)
             r_ball.pop(i)
-        #else:
-            #print('Try again!')
+        # else:
+        # print('Try again!')
         i += 1
     i = 0
     clicked = True
@@ -201,8 +203,8 @@ def new_object():
     vy_object.append(randint(-15, 15) / FPS)
     vx_object.append(randint(-15, 15) / FPS)
     pygame.draw.circle(screen, color_object[object_number],
-                           (x_object[object_number], y_object[object_number]),
-                           r_object[object_number])
+                       (x_object[object_number], y_object[object_number]),
+                       r_object[object_number])
     object_number += 1
     amount_object += 1
     counter_for_new_object = 0
@@ -230,7 +232,6 @@ def old_object():
 
 time_count = 0
 
-
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
@@ -241,13 +242,15 @@ while not finished:
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
             finished = True
-    title(screen, (120, 300), (180, 560),  (100, 450), 80, RED)
+    title(screen, (120, 300), (180, 560), (100, 450), 80, RED)
     pygame.display.update()
 finished = False
 pygame.mixer.music.set_volume(1)
 pygame.mixer.music.play()
 while not finished:
     clock.tick(FPS)
+    fps = clock.get_fps()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
@@ -284,7 +287,7 @@ while not finished:
     counter_for_new_ball += 4
     counter_for_new_object += 4
 finished = False
-#pygame.mixer.music.pause()
+# pygame.mixer.music.pause()
 sans_surf = pygame.image.load('mn.png')
 screen.fill((255, 255, 255))
 screen.blit(sans_surf, (500, 0))
@@ -303,7 +306,5 @@ while not finished:
             finished = True
 
     pygame.display.update()
-
-
 
 pygame.quit()

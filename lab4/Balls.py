@@ -272,12 +272,12 @@ while not finished:
         time_count = 0
     if time_number == 0:
         finished = True
-    if megalovania_check == True and time_number == 18:
+    if megalovania_check == True and time_number == 19:
         megalovania_check = False
 
     pygame.display.update()
     screen.fill(WHITE)
-    if change_color_count >= FPS / 8:
+    if change_color_count >= FPS / 4:
         change_color_count = 0
         if WHITE == (255, 255, 255) and megalovania_check == False:
             WHITE = (randint(0, 255), randint(0, 255), randint(0, 255))

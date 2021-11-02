@@ -1,6 +1,7 @@
 import pygame
 from random import randint
 import numpy
+
 '''
 print('Введите ваш ник')
 name = input()
@@ -58,49 +59,56 @@ COLORS = [
 ]
 RED_COLORS = [RED, CRIMSON, FIREBRICK, DARKRED]
 score_number = 0
-target_amount_balls = 5
-amount_balls = 0
-balls = []
 fallens = []
 counter_for_new_ball = 1000
 amount_object = 0
 target_amount_object = 5
 counter_for_new_object = 1000
-time_number = 36
-change_color_count = 0
-megalovania_check = True
 
 
-def score(screen, font_coord, font_size, font_color):
-    global score_number
+def score(
+        screen,
+        font_coord,
+        font_size,
+        font_color,
+        score_number
+):
     score_font = pygame.font.Font(None, font_size)
     score_result = score_font.render(str(score_number), True, font_color)
     screen.blit(score_result, font_coord)
 
 
 class Fallen:
-    def __init__(self, array_balls):
-        in_check = True
+    def __init__(
+            self,
+            array_balls
+    ):
+        inside_check = True
         self.r_object = 40
-        while in_check:
-            in_check = False
+        while inside_check:
+            inside_check = False
             self.x_object = randint(300, 1140)
             self.y_object = randint(60, 640)
             for ball in array_balls:
                 if (ball.x_object - self.x_object) ** 2 + (ball.y_object - self.y_object) ** 2 <= (
                         4 * self.r_object) ** 2:
-                    in_check = True
+                    inside_check = True
         self.dx_object = randint(200, 400) / FPS
         self.dy_object = randint(200, 400) / FPS
         self.color_object = COLORS[randint(0, 22)]
         self.vy_object = randint(-10, 10) / FPS
         self.vx_object = randint(-10, 10) / FPS
         self.collision_check = 0
-        pygame.draw.circle(screen, self.color_object,
+        pygame.draw.circle(screen,
+                           self.color_object,
                            (self.x_object, self.y_object),
-                           self.r_object)
+                           self.r_object
+                           )
 
-    def collision(self, array_balls):
+    def collision(
+            self,
+            array_balls
+    ):
         for ball in array_balls:
             if ball != self and (ball.x_object - self.x_object) ** 2 + (ball.y_object - self.y_object) ** 2 < (
                     2 * self.r_object) ** 2 and self.collision_check == 0:
@@ -124,7 +132,10 @@ class Fallen:
         if self.collision_check > 0:
             self.collision_check -= 1
 
-    def move(self, array_balls):
+    def move(
+            self,
+            array_balls
+    ):
         self.collision(array_balls)
         if self.x_object - self.r_object < 300:
             self.dx_object = abs(self.dx_object) + abs(self.vx_object)
@@ -140,7 +151,12 @@ class Fallen:
             self.dy_object = 0.99 * self.dy_object
         self.x_object += self.dx_object
         self.y_object += self.dy_object
-        pygame.draw.circle(screen, self.color_object, (self.x_object, self.y_object), self.r_object)
+        pygame.draw.circle(
+            screen,
+            self.color_object,
+            (self.x_object, self.y_object),
+            self.r_object
+        )
 
 
 class Gun:
@@ -154,26 +170,45 @@ class Gun:
         self.x_width = self.y_length / 10
         self.y_width = self.x_length / 10
         self.k_holding = 1
-        pygame.draw.polygon(screen, WHITE, ((self.x_fixed, self.y_fixed),
-                                                (self.x_fixed + self.x_length, self.y_fixed + self.y_length),
-                                                (self.x_fixed + self.x_length + self.x_width,
-                                                 self.y_fixed + self.y_length - self.y_width),
-                                                (self.x_fixed + self.x_width, self.y_fixed - self.y_width)), 0)
+        pygame.draw.polygon(
+            screen,
+            WHITE,
+            (
+                (self.x_fixed, self.y_fixed),
+                (self.x_fixed + self.x_length, self.y_fixed + self.y_length),
+                (self.x_fixed + self.x_length + self.x_width,
+                 self.y_fixed + self.y_length - self.y_width
+                 ),
+                (self.x_fixed + self.x_width, self.y_fixed - self.y_width)
+            ),
+            0
+        )
 
     def draw(self):
-        pygame.draw.polygon(screen, WHITE, ((self.x_fixed, self.y_fixed),
-                                            (self.x_fixed + self.x_length * self.k_holding,
-                                             self.y_fixed + self.y_length * self.k_holding),
-                                            (self.x_fixed + self.x_length * self.k_holding + self.x_width,
-                                             self.y_fixed + self.y_length * self.k_holding - self.y_width),
-                                            (self.x_fixed + self.x_width, self.y_fixed - self.y_width)), 0)
+        pygame.draw.polygon(
+            screen,
+            WHITE,
+            (
+                (self.x_fixed, self.y_fixed),
+                (self.x_fixed + self.x_length * self.k_holding,
+                 self.y_fixed + self.y_length * self.k_holding
+                 ),
+                (self.x_fixed + self.x_length * self.k_holding + self.x_width,
+                 self.y_fixed + self.y_length * self.k_holding - self.y_width
+                 ),
+                (self.x_fixed + self.x_width, self.y_fixed - self.y_width)
+            ),
+            0
+        )
 
     def still(self):
         self.x_width = self.y_length / 1000 * self.length
         self.y_width = self.x_length / 1000 * self.length
         self.draw()
 
-    def move(self, event):
+    def move(self,
+             event
+             ):
         self.k_proportion = numpy.sqrt(
             ((event.pos[0] - self.x_fixed) ** 2 + (event.pos[1] - self.y_fixed) ** 2) / self.length ** 2)
         self.x_length = (event.pos[0] - self.x_fixed) / self.k_proportion
@@ -184,7 +219,9 @@ class Gun:
 
 
 class Bullet:
-    def __init__(self, gun):
+    def __init__(self,
+                 gun
+                 ):
         self.x_object = gun.x_fixed + gun.x_length * gun.k_holding
         self.y_object = gun.y_fixed + gun.y_length * gun.k_holding
         self.r_object = 10
@@ -197,7 +234,9 @@ class Bullet:
                            (self.x_object, self.y_object),
                            self.r_object)
 
-    def collision(self, array_balls):
+    def collision(self,
+                  array_balls
+                  ):
         i = 0
         for ball in array_balls:
             if (ball.x_object - self.x_object) ** 2 + (ball.y_object - self.y_object) ** 2 < (
@@ -209,7 +248,9 @@ class Bullet:
     def draw(self):
         pygame.draw.circle(screen, self.color_object, (self.x_object, self.y_object), self.r_object)
 
-    def move(self, array_balls):
+    def move(self,
+             array_balls
+             ):
         self.collision(array_balls)
         if self.x_object - self.r_object < 0:
             self.dx_object = abs(self.dx_object)
@@ -235,12 +276,8 @@ def new_object():
 
 def old_object():
     for fallen in fallens:
-        if megalovania_check == False and change_color_count >= FPS / 8:
-            fallen.color_object = (randint(0, 255), randint(0, 255), randint(0, 255))
         fallen.move(fallens)
 
-
-time_count = 0
 
 pygame.display.update()
 clock = pygame.time.Clock()
@@ -284,17 +321,9 @@ while not finished:
         if checking == False:
             amount_object -= 1
             score_number += 1
-    score(screen, (100, 100), 40, WHITE)
+    score(screen, (100, 100), 40, WHITE, score_number)
     pygame.display.update()
     screen.fill(BLACK)
     counter_for_new_ball += 4
     counter_for_new_object += 4
-finished = False
-screen.fill((255, 255, 255))
-'''
-f = open('score.txt', 'r+')
-f.read()
-f.write('\n' + name + ' ' + str(score_number))
-f.close()
-'''
 pygame.quit()

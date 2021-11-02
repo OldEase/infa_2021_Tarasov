@@ -73,6 +73,15 @@ def score(
         font_color,
         score_number
 ):
+    '''
+    function to draw scores
+    :param screen: screen to draw on
+    :param font_coord: (x, y) - position of scores
+    :param font_size: size of scores
+    :param font_color: color of scores
+    :param score_number: amount of score to render
+    :return: None
+    '''
     score_font = pygame.font.Font(None, font_size)
     score_result = score_font.render(str(score_number), True, font_color)
     screen.blit(score_result, font_coord)
@@ -83,6 +92,10 @@ class Fallen:
             self,
             array_balls
     ):
+        '''
+        function to create object with random parameters and to draw it
+        :param array_balls: [array] - already existing balls
+        '''
         inside_check = True
         self.r_object = 40
         while inside_check:
@@ -109,6 +122,11 @@ class Fallen:
             self,
             array_balls
     ):
+        '''
+        function for checking collisions with walls and another balls
+        :param array_balls: [array] - already existing balls
+        :return: None
+        '''
         for ball in array_balls:
             if ball != self and (ball.x_object - self.x_object) ** 2 + (ball.y_object - self.y_object) ** 2 < (
                     2 * self.r_object) ** 2 and self.collision_check == 0:
@@ -136,6 +154,11 @@ class Fallen:
             self,
             array_balls
     ):
+        '''
+        function to move balls
+        :param array_balls: [array] - already existing balls
+        :return: None
+        '''
         self.collision(array_balls)
         if self.x_object - self.r_object < 300:
             self.dx_object = abs(self.dx_object) + abs(self.vx_object)
@@ -161,6 +184,9 @@ class Fallen:
 
 class Gun:
     def __init__(self):
+        '''
+        creating and drawing gun
+        '''
         self.x_fixed = x_screen_size / 10
         self.y_fixed = y_screen_size / 10 * 8
         self.length = 100
@@ -185,6 +211,10 @@ class Gun:
         )
 
     def draw(self):
+        '''
+        function to draw gun
+        :return: None
+        '''
         pygame.draw.polygon(
             screen,
             WHITE,
@@ -202,6 +232,10 @@ class Gun:
         )
 
     def still(self):
+        '''
+        function to draw gun when mouse doesn't move
+        :return: None
+        '''
         self.x_width = self.y_length / 1000 * self.length
         self.y_width = self.x_length / 1000 * self.length
         self.draw()
@@ -209,6 +243,11 @@ class Gun:
     def move(self,
              event
              ):
+        '''
+        function to draw gun when mouse is moving
+        :param event: event to get position of cursor
+        :return: None
+        '''
         self.k_proportion = numpy.sqrt(
             ((event.pos[0] - self.x_fixed) ** 2 + (event.pos[1] - self.y_fixed) ** 2) / self.length ** 2)
         self.x_length = (event.pos[0] - self.x_fixed) / self.k_proportion
@@ -222,6 +261,10 @@ class Bullet:
     def __init__(self,
                  gun
                  ):
+        '''
+        create bullet on the end of the gun
+        :param gun: which gun is shooting
+        '''
         self.x_object = gun.x_fixed + gun.x_length * gun.k_holding
         self.y_object = gun.y_fixed + gun.y_length * gun.k_holding
         self.r_object = 10
@@ -237,6 +280,11 @@ class Bullet:
     def collision(self,
                   array_balls
                   ):
+        '''
+        function to check and work with collision
+        :param array_balls: [array] - with which balls collision is checking
+        :return: None
+        '''
         i = 0
         for ball in array_balls:
             if (ball.x_object - self.x_object) ** 2 + (ball.y_object - self.y_object) ** 2 < (
@@ -246,6 +294,10 @@ class Bullet:
             i += 1
 
     def draw(self):
+        '''
+        function to draw ball
+        :return: None
+        '''
         pygame.draw.circle(screen, self.color_object, (self.x_object, self.y_object), self.r_object)
 
     def move(self,
@@ -271,10 +323,18 @@ class Bullet:
 
 
 def new_object():
+    '''
+    function to create ball
+    :return: None
+    '''
     fallens.append(Fallen(fallens))
 
 
 def old_object():
+    '''
+    function to move balls
+    :return: None
+    '''
     for fallen in fallens:
         fallen.move(fallens)
 

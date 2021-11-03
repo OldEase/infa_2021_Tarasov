@@ -103,6 +103,14 @@ def restart_button(
         font_size,
         font_color
 ):
+    '''
+    Function to draw button
+    :param screen: screen to draw on
+    :param font_coord: (x, y) - coordinates of button
+    :param font_size: size of text 'Restart'
+    :param font_color: color of 'Restart'
+    :return: None
+    '''
     pygame.draw.rect(screen, LIGHTSTEELBLUE, font_coord + (100, 50), 0)
     text(screen, font_coord, font_size, font_color, 'Restart')
 
@@ -113,6 +121,14 @@ def restart(
         amount_object,
         score_number
 ):
+    '''
+    Function to restart game
+    :param event: actual event to get position of cursor
+    :param fallens: array of object to annihilate
+    :param amount_object: counter of objects to destroy
+    :param score_number: counter of score to make zero
+    :return: array = [], 0, 0
+    '''
     if 50 < event.pos[0] < 150 and 630 < event.pos[1] < 680:
         fallens = []
         amount_object = 0
@@ -330,7 +346,7 @@ class Bullet:
 
     def draw(self):
         '''
-        function to draw ball
+        function to draw bullet
         :return: None
         '''
         pygame.draw.circle(screen, self.color_object, (self.x_object, self.y_object), self.r_object)
@@ -338,19 +354,20 @@ class Bullet:
     def move(self,
              array_balls
              ):
+        '''
+        Function to move bullet
+        :param array_balls:
+        :return:None
+        '''
         self.collision(array_balls)
         if self.x_object - self.r_object < 0:
-            self.dx_object = abs(self.dx_object)
-            self.dx_object = 0.5 * self.dx_object
+            self.collision_check = False
         if x_screen_size < self.x_object + self.r_object:
-            self.dx_object = -(abs(self.dx_object))
-            self.dx_object = 0.5 * self.dx_object
+            self.collision_check = False
         if self.y_object - self.r_object < 0:
-            self.dy_object = abs(self.dy_object) + abs(self.vy_object)
-            self.dy_object = 0.5 * self.dy_object
+            self.collision_check = False
         if y_screen_size < self.y_object + self.r_object:
-            self.dy_object = -(abs(self.dy_object) + abs(self.vy_object))
-            self.dy_object = 0.5 * self.dy_object
+            self.collision_check = False
         self.dy_object += self.vy_object
         self.x_object += self.dx_object
         self.y_object += self.dy_object

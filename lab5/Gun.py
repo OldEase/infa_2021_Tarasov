@@ -133,7 +133,6 @@ def restart(
         fallens = []
         amount_object = 0
         score_number = 0
-        bullet.collision_check = False
     return fallens, amount_object, score_number
 
 
@@ -360,14 +359,6 @@ class Bullet:
         :return:None
         '''
         self.collision(array_balls)
-        if self.x_object - self.r_object < 0:
-            self.collision_check = False
-        if x_screen_size < self.x_object + self.r_object:
-            self.collision_check = False
-        if self.y_object - self.r_object < 0:
-            self.collision_check = False
-        if y_screen_size < self.y_object + self.r_object:
-            self.collision_check = False
         self.dy_object += self.vy_object
         self.x_object += self.dx_object
         self.y_object += self.dy_object

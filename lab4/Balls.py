@@ -381,7 +381,6 @@ file = open("score.txt", "w")
 for place in data:
     file.write(place)
 file.close()
-print(data)
 volume = 1
 while not finished:
     clock.tick(FPS)

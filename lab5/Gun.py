@@ -2,11 +2,7 @@ import pygame
 from random import randint
 import numpy
 
-'''
-print('Введите ваш ник')
-name = input()
-print(name)
-'''
+
 pygame.init()
 
 FPS = 144

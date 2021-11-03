@@ -11,9 +11,6 @@ y_screen_size = 700
 board_for_counter = FPS * 2
 screen = pygame.display.set_mode((x_screen_size, y_screen_size))
 
-score_font = pygame.font.Font(None, 60)
-score_result = score_font.render('10', True, (255, 255, 255))
-
 RED = (255, 0, 0)
 CRIMSON = (220, 20, 60)
 FIREBRICK = (178, 34, 34)
@@ -61,6 +58,25 @@ amount_object = 0
 target_amount_object = 5
 counter_for_new_object = 1000
 
+def text(
+        screen,
+        font_coord,
+        font_size,
+        font_color,
+        text
+):
+    '''
+    function to draw text
+    :param screen: screen to draw on
+    :param font_coord: (x, y) - position of text
+    :param font_size: size of text
+    :param font_color: color of text
+    :param text: text to render
+    :return: None
+    '''
+    score_font = pygame.font.Font(None, font_size)
+    score_result = score_font.render(str(text), True, font_color)
+    screen.blit(score_result, font_coord)
 
 def score(
         screen,
@@ -78,9 +94,32 @@ def score(
     :param score_number: amount of score to render
     :return: None
     '''
-    score_font = pygame.font.Font(None, font_size)
-    score_result = score_font.render(str(score_number), True, font_color)
-    screen.blit(score_result, font_coord)
+    text(screen, font_coord, font_size, font_color, score_number)
+
+
+def restart_button(
+        screen,
+        font_coord,
+        font_size,
+        font_color
+):
+    pygame.draw.rect(screen, LIGHTSTEELBLUE, font_coord + (100, 50), 0)
+    text(screen, font_coord, font_size, font_color, 'Restart')
+
+
+def restart(
+        event,
+        fallens,
+        amount_object,
+        score_number
+):
+    if 50 < event.pos[0] < 150 and 630 < event.pos[1] < 680:
+        fallens = []
+        amount_object = 0
+        score_number = 0
+        bullet.collision_check = False
+    return fallens, amount_object, score_number
+
 
 
 class Fallen:
@@ -354,6 +393,8 @@ while not finished:
             bullet = Bullet(new_gun)
             checking = True
             new_gun.length = 100
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            fallens, amount_object, score_number = restart(event, fallens, amount_object, score_number)
         keys = pygame.mouse.get_pressed()
         if keys[0]:
             button_check = True
@@ -378,6 +419,7 @@ while not finished:
             amount_object -= 1
             score_number += 1
     score(screen, (100, 100), 40, WHITE, score_number)
+    restart_button(screen, (50, y_screen_size - 70), 40, BLACK)
     pygame.display.update()
     screen.fill(BLACK)
     counter_for_new_ball += 4

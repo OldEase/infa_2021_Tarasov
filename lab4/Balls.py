@@ -366,10 +366,22 @@ sans_surf = pygame.image.load('mn.png')
 screen.fill((255, 255, 255))
 screen.blit(sans_surf, (500, 0))
 end(screen, (100, 400), 100, BLACK, score_number)
-f = open('score.txt', 'r+')
-f.read()
-f.write('\n' + name + ' ' + str(score_number))
-f.close()
+data = open("score.txt", "r").readlines()
+data.append(name + '. ' + str(score_number) + '. \n')
+sort_check = True
+while sort_check:
+    sort_check = False
+    for i in range(len(data)):
+        if i != 0 and int(data[i].split('. ')[1]) > int(data[i - 1].split('. ')[1]):
+            sort_check = True
+            temporary = data[i]
+            data[i] = data[i - 1]
+            data[i - 1] = temporary
+file = open("score.txt", "w")
+for place in data:
+    file.write(place)
+file.close()
+print(data)
 volume = 1
 while not finished:
     clock.tick(FPS)

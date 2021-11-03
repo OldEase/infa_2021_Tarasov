@@ -86,38 +86,105 @@ change_color_count = 0
 megalovania_check = True
 
 
-def score(screen, font_coord, font_size, font_color):
-    global score_number
-    score_font = pygame.font.Font(None, font_size)
-    score_result = score_font.render(str(score_number), True, font_color)
-    screen.blit(score_result, font_coord)
+def text(
+        screen,
+        font_coord,
+        font_size,
+        font_color,
+        text_to_draw
+):
+    '''
+    function to draw text
+    :param screen: screen to draw
+    :param font_coord: (x, y) - coordinates for place to draw on screen
+    :param font_size: size of text
+    :param font_color: color of text
+    :param text_to_draw: text to draw on screen
+    :return: None
+    '''
+    text_font = pygame.font.Font(None, font_size)
+    text_result = text_font.render(str(text_to_draw), True, font_color)
+    screen.blit(text_result, font_coord)
 
 
-def time(screen, font_coord, font_size, font_color):
-    global time_number
-    time_font = pygame.font.Font(None, font_size)
-    time_result = time_font.render(str(time_number), True, font_color)
-    screen.blit(time_result, font_coord)
+def interface(
+        screen,
+        font_coord_score,
+        font_size_score,
+        font_color_score,
+        score,
+        font_coord_time,
+        font_size_time,
+        font_color_time,
+        time
+):
+    '''
+    Function to draw interface
+    :param screen: screen to draw
+    :param font_coord_score: (x,y) - coordinates of scores
+    :param font_size_score: size of score's text
+    :param font_color_score: color os score's text
+    :param score: number of score
+    :param font_coord_time: (x,y) - coordinates of time
+    :param font_size_time: size of time's text
+    :param font_color_time: color os time's text
+    :param time: number of time
+    :return: None
+    '''
+    text(screen, font_coord_score, font_size_score, font_color_score, score)
+    text(screen, font_coord_time, font_size_time, font_color_time, time)
 
 
-def end(screen, font_coord, font_size, font_color):
-    global score_number
-    time_font = pygame.font.Font(None, font_size)
-    time_result = time_font.render('Очки:' + str(score_number), True, font_color)
-    screen.blit(time_result, font_coord)
+def end(
+        screen,
+        font_coord,
+        font_size,
+        font_color,
+        score_number
+):
+    '''
+    Function to draw at ending screen
+    :param screen: screen to draw
+    :param font_coord: (x, y) - coordinates of text
+    :param font_size: size of text
+    :param font_color: color of text
+    :param score_number: number of score
+    :return: None
+    '''
+    text(screen, font_coord, font_size, font_color, 'Очки:' + str(score_number))
 
 
-def title(screen, font_coord, font_coord2, font_coord3, font_size, font_color):
-    title_font = pygame.font.Font(None, font_size)
-    title_result = title_font.render('ОПАСНО ДЛЯ ЭПИЛЕПТИКОВ', True, font_color)
-    title_result2 = title_font.render('КЛИКНИТЕ ДЛЯ ПРОДОЛЖЕНИЯ', True, font_color)
-    title_result3 = title_font.render('ГРОМКАЯ МУЗЫКА', True, font_color)
-    screen.blit(title_result, font_coord)
-    screen.blit(title_result2, font_coord2)
-    screen.blit(title_result3, font_coord3)
+def title(
+        screen,
+        font_coord1,
+        font_coord2,
+        font_coord3,
+        font_size,
+        font_color
+):
+    '''
+    Function to draw title on first screen
+    :param screen: screen to draw title
+    :param font_coord1: (x, y) - coordinates of 'ОПАСНО ДЛЯ ЭПИЛЕПТИКОВ'
+    :param font_coord2: (x, y) - coordinates of 'КЛИКНИТЕ ДЛЯ ПРОДОЛЖЕНИЯ'
+    :param font_coord3: (x, y) - coordinates of 'ГРОМКАЯ МУЗЫКА'
+    :param font_size: size of text
+    :param font_color: color of text
+    :return: None
+    '''
+    text(screen, font_coord1, font_size, font_color, 'ОПАСНО ДЛЯ ЭПИЛЕПТИКОВ')
+    text(screen, font_coord2, font_size, font_color, 'КЛИКНИТЕ ДЛЯ ПРОДОЛЖЕНИЯ')
+    text(screen, font_coord3, font_size, font_color, 'ГРОМКАЯ МУЗЫКА')
 
 
-def click(event):
+def click(
+        event
+):
+    '''
+    Funtion to check click on balls and objects
+    :param event: current event to check position of mouse
+    :return: None
+    '''
     global score_number, amount_balls, ball_number, square_number, amount_square, object_number, amount_object
     i = 0
     clicked = True
@@ -125,7 +192,6 @@ def click(event):
         delta_x = x_ball[i] - event.pos[0]
         delta_y = y_ball[i] - event.pos[1]
         if delta_x ** 2 + delta_y ** 2 <= r_ball[i] ** 2:
-            # print('Nice!')
             score_number += 1
             ball_number -= 1
             amount_balls -= 1
@@ -136,8 +202,6 @@ def click(event):
             dy_ball.pop(i)
             color_ball.pop(i)
             r_ball.pop(i)
-        # else:
-        # print('Try again!')
         i += 1
     i = 0
     clicked = True
@@ -145,7 +209,6 @@ def click(event):
         delta_x = x_object[i] - event.pos[0]
         delta_y = y_object[i] - event.pos[1]
         if delta_x ** 2 + delta_y ** 2 <= r_object[i] ** 2:
-            # print('Nice!')
             score_number += 10
             object_number -= 1
             amount_object -= 1
@@ -162,7 +225,10 @@ def click(event):
 
 
 def new_ball():
-    '''рисует новый шарик '''
+    '''
+    Function to draw new ball
+    :return: None
+    '''
     global x_ball, y_ball, r_ball, dx_ball, dy_ball, color_ball, amount_balls, ball_number, counter_for_new_ball
     x_ball.append(randint(100, 1100))
     y_ball.append(randint(100, 600))
@@ -177,6 +243,10 @@ def new_ball():
 
 
 def old_ball():
+    '''
+    Function to move existing balls
+    :return: None
+    '''
     global x_ball, y_ball, dx_ball, dy_ball, megalovania_check, COLORS
     for i in range(len(x_ball)):
         if x_screen_size < x_ball[i] + r_ball[i] + dx_ball[i] or x_ball[i] - r_ball[i] + dx_ball[i] < 0:
@@ -191,7 +261,10 @@ def old_ball():
 
 
 def new_object():
-    '''рисует новый object '''
+    '''
+    Function to draw new object
+    :return: None
+    '''
     global x_object, y_object, r_object, dx_object, dy_object, color_object, \
         amount_object, object_number, counter_for_new_object, vy_object, vx_object
     x_object.append(randint(50, 1150))
@@ -211,6 +284,10 @@ def new_object():
 
 
 def old_object():
+    '''
+    Function to move existing objects
+    :return: None
+    '''
     global x_object, y_object, dx_object, dy_object, megalovania_check, change_color_count
     for i in range(len(x_object)):
         if x_object[i] - r_object[i] < 0:
@@ -231,7 +308,6 @@ def old_object():
 
 
 time_count = 0
-
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
@@ -264,8 +340,7 @@ while not finished:
         new_object()
     else:
         old_object()
-    score(screen, (100, 100), 40, BLACK)
-    time(screen, (100, 50), 40, RED)
+    interface(screen, (100, 100), 40, BLACK, score_number, (100, 50), 40, RED, time_number)
     time_count += 1
     if time_count >= FPS:
         time_number -= 1
@@ -287,11 +362,10 @@ while not finished:
     counter_for_new_ball += 4
     counter_for_new_object += 4
 finished = False
-# pygame.mixer.music.pause()
 sans_surf = pygame.image.load('mn.png')
 screen.fill((255, 255, 255))
 screen.blit(sans_surf, (500, 0))
-end(screen, (100, 400), 100, BLACK)
+end(screen, (100, 400), 100, BLACK, score_number)
 f = open('score.txt', 'r+')
 f.read()
 f.write('\n' + name + ' ' + str(score_number))

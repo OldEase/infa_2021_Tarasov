@@ -55,8 +55,9 @@ score_number = 0
 fallens = []
 counter_for_new_ball = 1000
 amount_object = 0
-target_amount_object = 10
+target_amount_object = 4
 counter_for_new_object = 1000
+
 
 def text(
         screen,
@@ -77,6 +78,7 @@ def text(
     score_font = pygame.font.Font(None, font_size)
     score_result = score_font.render(str(text), True, font_color)
     screen.blit(score_result, font_coord)
+
 
 def score(
         screen,
@@ -115,17 +117,24 @@ def restart_button(
     text(screen, font_coord, font_size, font_color, 'Restart')
 
 
-def collision_check(checking, bullet, amount_object, score_number):
+def collision_check(
+        checking,
+        bullet,
+        amount_object,
+        score_number,
+        tank
+):
     func_amount_object = amount_object
     func_score_number = score_number
     temporary_checking = checking
-    if checking:
-        bullet.move(fallens)
+    if checking and tank.health_points > 0:
+        bullet.move(fallens, tank)
         temporary_checking = bullet.collision_check
         if temporary_checking == False:
             func_amount_object -= 1
             func_score_number += 1
     return temporary_checking, func_amount_object, func_score_number
+
 
 def restart(
         event,
@@ -149,23 +158,28 @@ def restart(
 
 
 class Tank:
-    def __init__(self):
+    def __init__(self, color=WHITE):
         self.x_position = 400
         self.y_position = 670
         self.x_size = 100
         self.y_size = 30
         self.speed = 1
-        pygame.draw.rect(screen, WHITE, (self.x_position, self.y_position, self.x_size, self.y_size), 0)
+        self.score = 0
+        self.color = color
+        self.health_points = 3
+        pygame.draw.rect(screen, self.color, (self.x_position, self.y_position, self.x_size, self.y_size), 0)
 
     def draw(self):
-        pygame.draw.rect(screen, WHITE, (self.x_position, self.y_position, self.x_size, self.y_size), 0)
+        if self.health_points > 0:
+            pygame.draw.rect(screen, self.color, (self.x_position, self.y_position, self.x_size, self.y_size), 0)
 
     def move(self, button_left_check, button_right_check):
-        if button_left_check and self.x_position > 0:
-            self.x_position -= self.speed
-        if button_right_check and self.x_position + self.x_size < x_screen_size:
-            self.x_position += self.speed
-        self.draw()
+        if self.health_points > 0:
+            if button_left_check and self.x_position > 0:
+                self.x_position -= self.speed
+            if button_right_check and self.x_position + self.x_size < x_screen_size:
+                self.x_position += self.speed
+            self.draw()
 
 
 class Fallen:
@@ -250,7 +264,7 @@ class Fallen:
         if self.y_object - self.r_object < 0:
             self.dy_object = abs(self.dy_object)# + abs(self.vy_object)
             self.dy_object = 0.99 * self.dy_object
-        if y_screen_size < self.y_object + self.r_object:
+        if y_screen_size - 100 < self.y_object + self.r_object:
             self.dy_object = -(abs(self.dy_object))# + abs(self.vy_object))
             self.dy_object = 0.99 * self.dy_object
         self.x_object += self.dx_object
@@ -292,7 +306,7 @@ class Gravity_Balls(Fallen):
         if self.y_object - self.r_object < 0:
             self.dy_object = abs(self.dy_object) + abs(self.vy_object)
             self.dy_object = 0.99 * self.dy_object
-        if y_screen_size < self.y_object + self.r_object:
+        if y_screen_size - 100 < self.y_object + self.r_object:
             self.dy_object = -(abs(self.dy_object) + abs(self.vy_object))
             self.dy_object = 0.99 * self.dy_object
         self.x_object += self.dx_object
@@ -308,7 +322,7 @@ class Gravity_Balls(Fallen):
 
 
 class Gun:
-    def __init__(self, tank_arrow):
+    def __init__(self, tank_arrow, color=WHITE):
         '''
         creating and drawing gun
         '''
@@ -322,9 +336,11 @@ class Gun:
         self.y_width = self.x_length / 10
         self.k_holding = 1
         self.x_turn_speed = 0.3
+        self.color = color
+        self.life_check = True
         pygame.draw.polygon(
             screen,
-            WHITE,
+            self.color,
             (
                 (self.x_fixed, self.y_fixed),
                 (self.x_fixed + self.x_length, self.y_fixed + self.y_length),
@@ -343,7 +359,7 @@ class Gun:
         '''
         pygame.draw.polygon(
             screen,
-            WHITE,
+            self.color,
             (
                 (self.x_fixed, self.y_fixed),
                 (self.x_fixed + self.x_length * self.k_holding,
@@ -357,41 +373,44 @@ class Gun:
             0
         )
 
-    def still(self, tank_arrow):
-        '''
+    '''def still(self, tank_arrow):
+        
         function to draw gun when mouse doesn't move
         :return: None
-        '''
+        
         self.x_fixed = tank_arrow.x_position + tank_arrow.x_size / 2
         self.y_fixed = tank_arrow.y_position + tank_arrow.y_size / 2
         self.x_width = self.y_length / 1000 * self.length
         self.y_width = self.x_length / 1000 * self.length
-        self.draw()
+        self.draw()'''
 
     def move(self,
              tank_arrow,
              button_up_check,
              button_down_check
              ):
-        self.x_fixed = tank_arrow.x_position + tank_arrow.x_size / 2
-        self.y_fixed = tank_arrow.y_position + tank_arrow.y_size / 2
-        if self.y_length < -25:
-            if button_up_check:
-                self.x_length += self.x_turn_speed
-                self.y_length = -numpy.sqrt(self.length**2 - self.x_length**2)
-            if button_down_check:
-                self.x_length -= self.x_turn_speed
-                self.y_length = -numpy.sqrt(self.length**2 - self.x_length**2)
+        if tank_arrow.health_points > 0:
+            self.x_fixed = tank_arrow.x_position + tank_arrow.x_size / 2
+            self.y_fixed = tank_arrow.y_position + tank_arrow.y_size / 2
+            if self.y_length < -25:
+                if button_up_check:
+                    self.x_length += self.x_turn_speed
+                    self.y_length = -numpy.sqrt(self.length**2 - self.x_length**2)
+                if button_down_check:
+                    self.x_length -= self.x_turn_speed
+                    self.y_length = -numpy.sqrt(self.length**2 - self.x_length**2)
+            else:
+                if self.x_length < 0:
+                   self.x_length += self.x_turn_speed
+                   self.y_length = -numpy.sqrt(self.length ** 2 - self.x_length ** 2)
+                if self.x_length > 0:
+                    self.x_length -= self.x_turn_speed
+                    self.y_length = -numpy.sqrt(self.length ** 2 - self.x_length ** 2)
+            self.x_width = self.y_length / 10
+            self.y_width = self.x_length / 10
+            self.draw()
         else:
-            if self.x_length < 0:
-                self.x_length += self.x_turn_speed
-                self.y_length = -numpy.sqrt(self.length ** 2 - self.x_length ** 2)
-            if self.x_length > 0:
-                self.x_length -= self.x_turn_speed
-                self.y_length = -numpy.sqrt(self.length ** 2 - self.x_length ** 2)
-        self.x_width = self.y_length / 10
-        self.y_width = self.x_length / 10
-        self.draw()
+            self.life_check = False
 
 
 class Bullet:
@@ -402,54 +421,67 @@ class Bullet:
         create bullet_arrow on the end of the gun
         :param gun: which gun is shooting
         '''
-        self.x_object = gun.x_fixed + gun.x_length * gun.k_holding
-        self.y_object = gun.y_fixed + gun.y_length * gun.k_holding
-        self.r_object = 10
-        self.dx_object = gun.x_length / FPS * 13 * gun.k_holding
-        self.dy_object = gun.y_length / FPS * 13 * gun.k_holding
-        self.color_object = RED_COLORS[randint(0, 3)]
-        self.vy_object = 10 / FPS
-        self.collision_check = True
-        pygame.draw.circle(screen, self.color_object,
-                           (self.x_object, self.y_object),
-                           self.r_object)
+        if gun.life_check:
+            self.x_object = gun.x_fixed + gun.x_length * gun.k_holding
+            self.y_object = gun.y_fixed + gun.y_length * gun.k_holding
+            self.r_object = 10
+            self.dx_object = gun.x_length / FPS * 13 * gun.k_holding
+            self.dy_object = gun.y_length / FPS * 13 * gun.k_holding
+            self.color_object = gun.color
+            self.vy_object = 10 / FPS
+            self.collision_check = True
+            self.life_check = True
+            pygame.draw.circle(screen, self.color_object,
+                               (self.x_object, self.y_object),
+                               self.r_object)
+        else:
+            self.life_check = False
+            self.collision_check = False
 
     def collision(self,
-                  array_balls
+                  array_balls,
+                  tank
                   ):
         '''
         function to check and work with collision
         :param array_balls: [array] - with which balls collision is checking
         :return: None
         '''
-        i = 0
-        for ball in array_balls:
-            if (ball.x_object - self.x_object) ** 2 + (ball.y_object - self.y_object) ** 2 < (
-                    self.r_object + ball.r_object) ** 2:
-                array_balls.pop(i)
+        if self.life_check:
+            i = 0
+            for ball in array_balls:
+                if (ball.x_object - self.x_object) ** 2 + (ball.y_object - self.y_object) ** 2 < (
+                        self.r_object + ball.r_object) ** 2:
+                    array_balls.pop(i)
+                    self.collision_check = False
+                i += 1
+            if tank.x_position < self.x_object < tank.x_position + tank.x_size and self.y_object > tank.y_position:
+                tank.health_points -= 1
                 self.collision_check = False
-            i += 1
 
     def draw(self):
         '''
         function to draw bullet_arrow
         :return: None
         '''
-        pygame.draw.circle(screen, self.color_object, (self.x_object, self.y_object), self.r_object)
+        if self.life_check:
+            pygame.draw.circle(screen, self.color_object, (self.x_object, self.y_object), self.r_object)
 
     def move(self,
-             array_balls
+             array_balls,
+             tank
              ):
         '''
         Function to move bullet_arrow
         :param array_balls:
         :return:None
         '''
-        self.collision(array_balls)
-        self.dy_object += self.vy_object
-        self.x_object += self.dx_object
-        self.y_object += self.dy_object
-        self.draw()
+        if self.life_check:
+            self.collision(array_balls, tank)
+            self.dy_object += self.vy_object
+            self.x_object += self.dx_object
+            self.y_object += self.dy_object
+            self.draw()
 
 
 def new_object():
@@ -476,9 +508,9 @@ finished = False
 checking_arrow = False
 checking_wasd = False
 tank_arrow = Tank()
-tank_wasd = Tank()
+tank_wasd = Tank(RED)
 gun_arrow = Gun(tank_arrow)
-gun_wasd = Gun(tank_wasd)
+gun_wasd = Gun(tank_wasd, RED)
 button_space_check = False
 test = True
 move_check = 0
@@ -502,11 +534,11 @@ while not finished:
         button_w_check = pygame.key.get_pressed()[pygame.K_w]
         button_s_check = pygame.key.get_pressed()[pygame.K_s]
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_SPACE and tank_arrow.health_points > 0:
                 bullet_arrow = Bullet(gun_arrow)
                 checking_arrow = True
                 gun_arrow.length = 50
-            if event.key == pygame.K_LSHIFT:
+            if event.key == pygame.K_LSHIFT and tank_wasd.health_points > 0:
                 bullet_wasd = Bullet(gun_wasd)
                 checking_wasd = True
                 gun_wasd.length = 50
@@ -532,13 +564,40 @@ while not finished:
         gun_wasd.k_holding = 1
     gun_wasd.move(tank_wasd, button_w_check, button_s_check)
     if checking_arrow:
-        checking_arrow, amount_object, score_number = collision_check(checking_arrow, bullet_arrow, amount_object, score_number)
+        checking_arrow, amount_object, score_number = collision_check(checking_arrow, bullet_arrow, amount_object, tank_arrow.score, tank_wasd)
     if checking_wasd:
-        checking_wasd, amount_object, score_number = collision_check(checking_wasd, bullet_wasd, amount_object, score_number)
-    score(screen, (100, 100), 40, WHITE, score_number)
+        checking_wasd, amount_object, score_number = collision_check(checking_wasd, bullet_wasd, amount_object, tank_wasd.score, tank_arrow)
+    score(screen, (50, 100), 40, WHITE, tank_arrow.health_points)
+    score(screen, (100, 100), 40, WHITE, tank_arrow.score)
+    score(screen, (50, 150), 40, RED, tank_wasd.health_points)
+    score(screen, (100, 150), 40, RED, tank_wasd.score)
     restart_button(screen, (50, y_screen_size - 70), 40, BLACK)
     pygame.display.update()
     screen.fill(BLACK)
     counter_for_new_ball += 4
     counter_for_new_object += 4
+    if tank_arrow.health_points <= 0 or tank_wasd.health_points <= 0:
+        finished = True
+finished = False
+if tank_arrow.health_points <= 0:
+    tank_wasd.score += 10
+if tank_wasd.health_points <= 0:
+    tank_arrow.score += 10
+while not finished:
+    clock.tick(FPS)
+    fps = clock.get_fps()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            finished = True
+    screen.fill(BLACK)
+    text(screen, (100, 100), 100, RED, 'WASD: ' + str(tank_wasd.score))
+    text(screen, (100, 210), 100, WHITE, 'Arrow: ' + str(tank_arrow.score))
+    if tank_arrow.score > tank_wasd.score:
+        text(screen, (100, 350), 100, RED, 'Arrow - Winner')
+    if tank_arrow.score < tank_wasd.score:
+        text(screen, (100, 350), 100, RED, 'WASD - Winner')
+    if tank_arrow.score == tank_wasd.score:
+        text(screen, (100, 350), 100, RED, 'Draw')
+
+    pygame.display.update()
 pygame.quit()

@@ -145,7 +145,6 @@ def restart(
         fallens = []
         amount_object = 0
         score_number = 0
-        bullet_arrow.collision_check = False
     return fallens, amount_object, score_number
 
 

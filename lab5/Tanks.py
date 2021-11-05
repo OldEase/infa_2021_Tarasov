@@ -55,7 +55,7 @@ score_number = 0
 fallens = []
 counter_for_new_ball = 1000
 amount_object = 0
-target_amount_object = 40
+target_amount_object = 4
 counter_for_new_object = 1000
 
 
@@ -192,7 +192,7 @@ class Fallen:
         :param array_balls: [array] - already existing balls
         '''
         inside_check = True
-        self.r_object = 20
+        self.r_object = 40
         while inside_check:
             inside_check = False
             self.x_object = randint(300, 1140)
@@ -391,7 +391,7 @@ class Gun:
         if tank_arrow.health_points > 0:
             self.x_fixed = tank_arrow.x_position + tank_arrow.x_size / 2
             self.y_fixed = tank_arrow.y_position + tank_arrow.y_size / 2
-            if self.y_length < -25:
+            if self.y_length < -45:
                 if button_up_check:
                     self.x_length += self.x_turn_speed
                     self.y_length = -numpy.sqrt(self.length**2 - self.x_length**2)

@@ -55,7 +55,7 @@ score_number = 0
 fallens = []
 counter_for_new_ball = 1000
 amount_object = 0
-target_amount_object = 4
+target_amount_object = 40
 counter_for_new_object = 1000
 
 
@@ -192,7 +192,7 @@ class Fallen:
         :param array_balls: [array] - already existing balls
         '''
         inside_check = True
-        self.r_object = 40
+        self.r_object = 20
         while inside_check:
             inside_check = False
             self.x_object = randint(300, 1140)
@@ -277,7 +277,6 @@ class Fallen:
             (self.x_object, self.y_object),
             self.r_object
         )
-
 
 
 class Gravity_Balls(Fallen):
@@ -484,6 +483,49 @@ class Bullet:
             self.draw()
 
 
+class Bomb(Bullet):
+    def __init__(self, gun, event):
+        if gun.life_check:
+            self.x_object = event.pos[0]
+            self.y_object = event.pos[1]
+            self.r_object = 30
+            self.dx_object = 0
+            self.dy_object = 0
+            self.color_object = CRIMSON
+            self.vy_object = 10 / FPS
+            self.collision_check = True
+            self.life_check = True
+            pygame.draw.circle(screen, self.color_object,
+                               (self.x_object, self.y_object),
+                               self.r_object)
+        else:
+            self.life_check = False
+            self.collision_check = False
+
+    def collision(self,
+                  tank1,
+                  tank2
+                  ):
+        if self.life_check:
+            if tank1.x_position < self.x_object < tank1.x_position + tank1.x_size and self.y_object > tank1.y_position:
+                tank1.health_points -= 1
+                self.collision_check = False
+            if tank2.x_position < self.x_object < tank2.x_position + tank2.x_size and self.y_object > tank2.y_position:
+                tank2.health_points -= 1
+                self.collision_check = False
+
+    def move(self,
+             tank1,
+             tank2
+             ):
+        if self.life_check:
+            self.collision(tank1, tank2)
+            self.dy_object += self.vy_object
+            self.x_object += self.dx_object
+            self.y_object += self.dy_object
+            self.draw()
+
+
 def new_object():
     '''
     function to create ball
@@ -515,6 +557,7 @@ button_space_check = False
 test = True
 move_check = 0
 aim_check = 0
+bomb_exist_check = False
 while not finished:
     clock.tick(FPS)
     fps = clock.get_fps()
@@ -523,6 +566,9 @@ while not finished:
             finished = True
         if event.type == pygame.MOUSEBUTTONDOWN:
             fallens, amount_object, score_number = restart(event, fallens, amount_object, score_number)
+        if event.type == pygame.MOUSEBUTTONUP:
+            bomb = Bomb(gun_wasd, event)
+            bomb_exist_check = True
         button_space_check = pygame.key.get_pressed()[pygame.K_SPACE]
         button_left_check = pygame.key.get_pressed()[pygame.K_LEFT]
         button_right_check = pygame.key.get_pressed()[pygame.K_RIGHT]
@@ -563,6 +609,9 @@ while not finished:
     else:
         gun_wasd.k_holding = 1
     gun_wasd.move(tank_wasd, button_w_check, button_s_check)
+    if bomb_exist_check:
+        bomb.move(tank_wasd, tank_arrow)
+        bomb_exist_check = bomb.collision_check
     if checking_arrow:
         checking_arrow, amount_object, score_number = collision_check(checking_arrow, bullet_arrow, amount_object, tank_arrow.score, tank_wasd)
     if checking_wasd:

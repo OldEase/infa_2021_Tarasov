@@ -613,9 +613,9 @@ while not finished:
         bomb.move(tank_wasd, tank_arrow)
         bomb_exist_check = bomb.collision_check
     if checking_arrow:
-        checking_arrow, amount_object, score_number = collision_check(checking_arrow, bullet_arrow, amount_object, tank_arrow.score, tank_wasd)
+        checking_arrow, amount_object, tank_arrow.score = collision_check(checking_arrow, bullet_arrow, amount_object, tank_arrow.score, tank_wasd)
     if checking_wasd:
-        checking_wasd, amount_object, score_number = collision_check(checking_wasd, bullet_wasd, amount_object, tank_wasd.score, tank_arrow)
+        checking_wasd, amount_object, tank_wasd.score = collision_check(checking_wasd, bullet_wasd, amount_object, tank_wasd.score, tank_arrow)
     score(screen, (50, 100), 40, WHITE, tank_arrow.health_points)
     score(screen, (100, 100), 40, WHITE, tank_arrow.score)
     score(screen, (50, 150), 40, RED, tank_wasd.health_points)
